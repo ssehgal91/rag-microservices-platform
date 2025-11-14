@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7
+    container_name: rag_redis
+    ports:
+      - "6379:6379"
+
+  gateway:
+    build: ./rag-api-gateway
+    container_name: rag_api_gateway
+    environment:
+      - GATEWAY_API_KEY=super-secure-gateway-key
+      - INTERNAL_SERVICE_KEY=rag-internal-123
+      - SPRING_REDIS_HOST=redis
+    ports:
+      - "8085:8085"
+    depends_on:
+      - redis
+      - chat-storage
+
+  chat-storage:
+    build: ./rag-chat-storage
+    container_name: rag_chat_storage
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/ragdb
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - INTERNAL_SERVICE_KEY=rag-internal-123
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: rag_postgres
+    environment:
+      POSTGRES_DB: ragdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: rag_adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:

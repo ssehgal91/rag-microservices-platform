@@ -1,0 +1,32 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: rag-api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: chat-storage
+          uri: http://rag-chat-storage:8080
+          predicates:
+            - Path=/api/v1/**
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 10
+            redis-rate-limiter.burstCapacity: 20
+
+app:
+  jwt:
+    secret: my-super-secret-key-my-super-secret-key
+    expiration: 3600000
+  demo-user:
+    username: testuser
+    password: password123
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

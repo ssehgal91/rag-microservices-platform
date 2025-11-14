@@ -1,0 +1,48 @@
+<configuration>
+
+    <!-- Show Logback initialization issues -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <!-- Asynchronous appender for performance -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="LOGSTASH"/>
+        <queueSize>5000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+    <!-- Logstash TCP appender -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>logstash:5001</destination>
+        <reconnectionDelay>5000</reconnectionDelay>
+
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <message/>
+                <loggerName/>
+                <threadName/>
+                <logLevel/>
+                <mdc>
+                    <includeMdcKeyName>X-Correlation-Id</includeMdcKeyName>
+                </mdc>
+                <stackTrace/>
+                <jsonFields>
+                    <customFields>{"service":"rag-api-gateway","environment":"local"}</customFields>
+                </jsonFields>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
