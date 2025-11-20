@@ -39,3 +39,5 @@ eureka:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
+
+APP_INTERNAL_SERVICE_KEY: rag-internal-123
