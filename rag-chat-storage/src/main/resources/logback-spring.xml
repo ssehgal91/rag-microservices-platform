@@ -5,25 +5,42 @@
     <logger name="org.apache.coyote" level="INFO"/>
     <logger name="org.springframework.security" level="INFO"/>
 
-    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="LOGSTASH" />
-        <queueSize>5000</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-        <includeCallerData>true</includeCallerData>
-    </appender>
+    <!-- =============== LOCAL PROFILE =============== -->
+    <springProfile name="local">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+            </encoder>
+        </appender>
 
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>logstash:5001</destination>
-        <reconnectionDelay>5000</reconnectionDelay>
-        <connectionTimeout>10000</connectionTimeout>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"service":"rag-chat-storage","environment":"local"}</customFields>
-        </encoder>
-    </appender>
+    <!-- ============ NON-LOCAL PROFILES (dev/test/prod) ============ -->
+    <springProfile name="!local">
 
-    <root level="INFO">
-        <appender-ref ref="ASYNC"/>
-    </root>
+        <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="LOGSTASH" />
+            <queueSize>5000</queueSize>
+            <discardingThreshold>0</discardingThreshold>
+            <includeCallerData>true</includeCallerData>
+        </appender>
+
+        <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <destination>logstash:5001</destination>
+            <reconnectionDelay>5000</reconnectionDelay>
+            <connectionTimeout>10000</connectionTimeout>
+
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"service":"rag-chat-storage"}</customFields>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="ASYNC"/>
+        </root>
+    </springProfile>
 
 </configuration>
