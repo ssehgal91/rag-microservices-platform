@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: rag-api-gateway
+
+#  config:
+#    import: "configserver:http://localhost:8888"
+
+
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://rag-discovery-server:8761/eureka/

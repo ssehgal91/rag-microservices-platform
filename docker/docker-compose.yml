@@ -59,7 +59,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       # Config + Discovery
-      # SPRING_CLOUD_CONFIG_URI: http://rag-config-server:8888
       SPRING_CONFIG_IMPORT: optional:configserver:http://rag-config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://rag-discovery-server:8761/eureka/
       # DB
@@ -103,7 +102,6 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      #SPRING_CLOUD_CONFIG_URI: http://rag-config-server:8888
       SPRING_CONFIG_IMPORT: optional:configserver:http://rag-config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://rag-discovery-server:8761/eureka/
     depends_on:
@@ -131,7 +129,6 @@ services:
     ports:
       - "8761:8761"
     environment:
-      # SPRING_PROFILES_ACTIVE: docker
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
@@ -147,7 +144,6 @@ services:
     ports:
       - "8888:8888"
     environment:
-      #SPRING_PROFILES_ACTIVE: docker
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       GIT_USERNAME: ${GIT_USERNAME}
       GIT_PASSWORD: ${GIT_PASSWORD}

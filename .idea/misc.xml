@@ -7,6 +7,8 @@
         <option value="$PROJECT_DIR$/rag-api-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/rag-chat-storage/rag-chat-storage/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/rag-discovery-server/pom.xml" />
+        <option value="$PROJECT_DIR$/rag-config-server/pom.xml" />
       </list>
     </option>
   </component>

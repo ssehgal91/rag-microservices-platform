@@ -1,0 +1,17 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: rag-config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/ssehgal91/rag-microservices-platform.git
+          clone-on-start: true
+          search-paths: rag-config-repo
+          default-label: main
+          #username: ssehgal91
+          #password: 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

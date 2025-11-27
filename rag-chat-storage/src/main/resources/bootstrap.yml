@@ -1,11 +1,7 @@
-spring:
-  application:
-    name: rag-chat-storage
+  spring:
+    application:
+      name: rag-chat-storage
 
-  config:
-    import: "configserver:http://localhost:8888"
+#    config:
+#      import: "configserver:http://localhost:8888"
 
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
