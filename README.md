@@ -11,8 +11,10 @@ It manages:
 - Messages within each session
 - System-to-system secure communication
 - Centralized logging, monitoring & caching
+- Centralized configuration (Config Server) and service discovery (Discovery Server)
 
-The platform is built with Spring Boot, Spring Cloud Gateway, PostgreSQL, Redis, and a full ELK logging pipeline, all orchestrated using Docker Compose.
+
+The platform uses **Spring Boot**, **Spring Cloud Gateway**, **Spring Cloud Config**, **Spring Cloud Discovery (Eureka)**, **PostgreSQL**, **Redis**, and a full **ELK logging pipeline**, all orchestrated using **Docker Compose**.
 
 ## Requirements
 - Java 17+
@@ -22,9 +24,11 @@ The platform is built with Spring Boot, Spring Cloud Gateway, PostgreSQL, Redis,
 ## Architecture Summary
 - Client sends requests to API Gateway (port 8085) with X-API-KEY
 - Gateway forwards requests to Chat Storage service using X-INTERNAL-KEY
+- Config Server (rag-config-server) serves environment-specific configuration to all services
+- Discovery Server (Eureka) enables dynamic service registration & discovery
 - Chat Storage writes/reads from PostgreSQL and Redis
-- Logstash ships logs to Elasticsearch
-- Kibana provides UI dashboards
+- Logs flow: **Logback → Logstash → Elasticsearch → Kibana**
+- Full infra is containerized via Docker
 
 ## Build Steps
 
@@ -84,6 +88,8 @@ Follow these steps to build and run the entire microservices platform.
 > Note: Ensure Docker is running and ports mentioned in the docker-compose.*.yml are available.
 
 ### Service URLs
+- Config Server (default)	http://localhost:8888/actuator/health
+- Discovery Server (Eureka UI)	http://localhost:8761/
 - Chat Storage: http://localhost:8080/actuator/health
 - API Gateway: http://localhost:8085/actuator/health
 - Centralized Logs: **Logback → Logstash → Elasticsearch → Kibana**: http://localhost:5601/
@@ -96,7 +102,8 @@ Follow these steps to build and run the entire microservices platform.
 ## Tech Stack
 - Java 21
 - Spring Boot 3
-- Spring Cloud Gateway
+- Spring Cloud (Gateway, Config Server, Discovery/Eureka)
+- Spring Data JPA / Hibernate
 - PostgreSQL 15
 - Redis
 - ELK (Logstash/Elasticsearch/Kibana)
@@ -106,6 +113,17 @@ Follow these steps to build and run the entire microservices platform.
 - JUnit 5, Mockito
 
 ## Microservices
+
+# Config Server (Spring Cloud Config)
+  - Centralized configuration service (port 8888)
+  - Serves environment-specific configuration to all services (application-{profile}.yml)
+  - Supports Git-backed config or native files 
+  - All microservices fetch their config at startup from the Config Server
+
+# Discovery Server (Eureka)
+  - Service registry (port 8761 by default)
+  - All services register with Eureka on startup
+  - API Gateway uses service discovery to route requests to instances of downstream services
 
 # API Gateway (Spring Cloud Gateway)
   - Exposes all APIs at port 8085
@@ -251,3 +269,9 @@ This project implements rate limiting using Redis:
 
 - **Chat service not reachable**:
   `Ensure chat-service is marked healthy in Docker before gateway starts.`
+
+- **Config Server / Discovery Server issues**:
+  `If services fail on startup, ensure:
+   Config Server is reachable at http://rag-config-server:8888 and responds to /actuator/health
+   Discovery Server (Eureka) is reachable at http://rag-discovery-server:8761/ and allows registration
+   Services may retry config/discovery registration; check logs for retry attempts.`
